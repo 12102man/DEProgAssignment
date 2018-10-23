@@ -147,7 +147,7 @@ class ErrorAnalysis:
     a graph of changing error in comparison with N.
     """
 
-    def __init__(self, x0, y0, X, N):
+    def __init__(self, x0, y0, X, start, end):
         """
         Initializer
         :param x0: x0
@@ -155,13 +155,15 @@ class ErrorAnalysis:
         :param X: X
         :param N: X
         """
+        if start == 0:
+            raise ValueError("You can't create a graph with zero intervals!")
         self.x_array = []  # Array of x-values
         self.y_array = {}  # Dictionary of different y-values, depending on a method
         self.x0 = x0
         self.y0 = y0
         self.X = X
-        self.N = N
-        for i in range(1, N + 1):  # Fill x_array with values from 1 to N
+        self.start = start
+        for i in range(start, end+1):  # Fill x_array with values from 1 to N
             self.x_array.append(i)
 
     def find_error(self, method):
