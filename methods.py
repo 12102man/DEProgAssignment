@@ -1,7 +1,11 @@
 from math import *
 
 
-class Euler:
+class Solution:
+    """
+    Basic class for solution
+    """
+
     def __init__(self, x0, y0, X, N):
         self.x0 = x0
         self.y0 = y0
@@ -10,6 +14,32 @@ class Euler:
         self.delta = (X - x0) / N
         self.x_array = [x0]
         self.y_array = [y0]
+        self.name = 'Sample'
+
+    def evaluate(self):
+        """
+        Method that evaluates the y-values
+        :return:
+        """
+        pass
+
+    def calculate_right_part(self, x, y):
+        """
+
+        :param x: x
+        :param y: y
+        :return: f(x,y)
+        """
+        return 2 * x * y + 5 - x * x
+
+
+class Euler(Solution):
+    """
+    Euler method
+    """
+
+    def __init__(self, x0, y0, X, N):
+        Solution.__init__(self, x0, y0, X, N)
         self.name = 'Euler'
         self.evaluate()
 
@@ -22,14 +52,14 @@ class Euler:
             self.y_array.append(y + self.delta * self.calculate_right_part(x, y))
             i += self.delta
 
-    def calculate_right_part(self, x, y):
-        return 2 * x * y + 5 - x * x
 
-
-class ImprovedEuler(Euler):
+class ImprovedEuler(Solution):
+    """
+    Improved Euler method
+    """
 
     def __init__(self, x0, y0, X, N):
-        Euler.__init__(self, x0, y0, X, N)
+        Solution.__init__(self, x0, y0, X, N)
         self.name = 'Improved Euler'
         self.evaluate()
 
@@ -51,13 +81,21 @@ class ImprovedEuler(Euler):
             i += self.delta
 
 
-class Exact(Euler):
+class Exact(Solution):
+    """
+    Exact solution
+    """
+
     def __init__(self, x0, y0, X, N):
-        Euler.__init__(self, x0, y0, X, N)
+        Solution.__init__(self, x0, y0, X, N)
         self.name = 'Exact'
         self.evaluate()
 
     def evaluate_constants(self):
+        """
+        Method that evaluates constant for solution
+        :return: constant
+        """
         y0 = self.y0
         x0 = self.x0
         return y0 / exp(x0 * x0) + 9 / 4 * sqrt(pi) * erf(x0) + x0 / (2 * exp(x0 * x0))
@@ -74,6 +112,11 @@ class Exact(Euler):
             i += self.delta
 
     def erf(self, x):
+        """
+        Method to calculate erf(x)
+        :param x: x
+        :return: erf(x)
+        """
         # save the sign of x
         sign = 1 if x >= 0 else -1
         x = abs(x)
@@ -92,9 +135,13 @@ class Exact(Euler):
         return sign * y
 
 
-class RungeKutta(Euler):
+class RungeKutta(Solution):
+    """
+    Runge-Kutta solution
+    """
+
     def __init__(self, x0, y0, X, N):
-        Euler.__init__(self, x0, y0, X, N)
+        Solution.__init__(self, x0, y0, X, N)
         self.name = 'Runge-Kutta (4th order)'
         self.evaluate()
 
@@ -114,6 +161,3 @@ class RungeKutta(Euler):
             self.x_array.append(x)
 
             x += h
-
-
-
