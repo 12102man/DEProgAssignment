@@ -1,7 +1,6 @@
 from tkinter import *
-import methods as methods
-import plotter as Plotter
-from matplotlib.figure import Figure
+from PIL import ImageTk, Image
+from plotter import *
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 
 
@@ -9,9 +8,19 @@ class DE_App(Tk):
     def __init__(self, *args, **kwargs):
         Tk.__init__(self, *args, **kwargs)
         self.geometry('500x700')
+        self.title = "[DE] Solver"
         self.resizable(width=False, height=False)
 
-        Label(self, text="DE App").place(x=200,y=0)
+        Label(self, text="Differential equation solver").place(x=200, y=0)
+        Label(self, text="Here will be a graph with methods").place(x=200, y=100)
+        Label(self, text="Here will be a graph with errors").place(x=200, y=500)
+
+        pilImage = Image.open("equation.png").resize((120, 30), Image.ANTIALIAS)
+        image = ImageTk.PhotoImage(pilImage)
+
+        a = Label(image=image)
+        a.image = image
+        a.place(x=0, y=150)
 
         Label(self, text="x0").grid(row=0)
         Label(self, text="y0").grid(row=1)
@@ -27,40 +36,29 @@ class DE_App(Tk):
         self.y0_field.grid(row=1, column=1)
         self.X_field.grid(row=2, column=1)
         self.N_field.grid(row=3, column=1)
-        b = Button(self, text="OK", command=self.calculate)
+        b = Button(self, text="Calculate", command=self.calculate)
         b.grid(row=4, column=0)
 
     def calculate(self):
         # Methods
-        plotter_methods = Plotter.Plotter()
+        solution = MagicSolver(float(self.x0_field.get()), float(self.y0_field.get()), float(self.X_field.get()),
+                               float(self.N_field.get()))
 
-        euler = methods.Euler(int(self.x0_field.get()), int(self.y0_field.get()), int(self.X_field.get()),
-                              int(self.N_field.get()))
-        improved_euler = methods.ImprovedEuler(int(self.x0_field.get()), int(self.y0_field.get()),
-                                               int(self.X_field.get()), int(self.N_field.get()))
-        exact = methods.Exact(int(self.x0_field.get()), int(self.y0_field.get()),
-                              int(self.X_field.get()), int(self.N_field.get()))
-        runge_kutta = methods.Runge_Kutta(int(self.x0_field.get()), int(self.y0_field.get()),
-                                          int(self.X_field.get()), int(self.N_field.get()))
-
-        # Plotting methods
-        plotter_methods.add_graph(euler)
-        plotter_methods.add_graph(improved_euler)
-        plotter_methods.add_graph(exact)
-        plotter_methods.add_graph(runge_kutta)
-        canvas1 = FigureCanvasTkAgg(plotter_methods.figure, self)
+        canvas1 = FigureCanvasTkAgg(solution.generate_plot().figure, self)
         canvas1.get_tk_widget().place(x=150, y=20)
 
-        # Errors
-        plotter_errors = Plotter.Plotter()
-        euler_error = methods.Error(exact, euler)
-        runge_kutta_error = methods.Error(exact, runge_kutta)
-        improved_euler_error = methods.Error(exact, improved_euler)
+        errors = ErrorAnalysis(float(self.x0_field.get()), float(self.y0_field.get()), float(self.X_field.get()),
+                               int(self.N_field.get()))
 
-        # Plotting errors
-        plotter_errors.add_graph(euler_error)
-        plotter_errors.add_graph(improved_euler_error)
-        plotter_errors.add_graph(runge_kutta_error)
+        errors.find_error('euler')
+        errors.find_error('improved_euler')
+        errors.find_error('runge_kutta')
+
+        plotter_errors = Plotter('errors')
+        plotter_errors.add_error_graph(errors, 'euler')
+        plotter_errors.add_error_graph(errors, 'improved_euler')
+        plotter_errors.add_error_graph(errors, 'runge_kutta')
+
         canvas2 = FigureCanvasTkAgg(plotter_errors.figure, self)
         canvas2.get_tk_widget().place(x=150, y=370)
 

@@ -73,7 +73,7 @@ class Exact(Euler):
 
             i += self.delta
 
-    def erf(x):
+    def erf(self, x):
         # save the sign of x
         sign = 1 if x >= 0 else -1
         x = abs(x)
@@ -89,10 +89,10 @@ class Exact(Euler):
         # A&S formula 7.1.26
         t = 1.0 / (1.0 + p * x)
         y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * exp(-x * x)
-        return sign * y  # erf(-x) = -erf(x)
+        return sign * y
 
 
-class Runge_Kutta(Euler):
+class RungeKutta(Euler):
     def __init__(self, x0, y0, X, N):
         Euler.__init__(self, x0, y0, X, N)
         self.name = 'Runge-Kutta (4th order)'
@@ -116,13 +116,4 @@ class Runge_Kutta(Euler):
             x += h
 
 
-class Error:
-    def __init__(self, exact, method):
-        self.x_array = method.x_array
-        self.y_array = []
-        self.compare(exact, method)
-        self.name = method.name
 
-    def compare(self, exact, method):
-        for i in range(len(self.x_array)):
-            self.y_array.append(abs(exact.y_array[i] - method.y_array[i]))
